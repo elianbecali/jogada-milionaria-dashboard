@@ -49,13 +49,7 @@ export default ({ data }) => {
               <b>INVESTIDO</b>
               <div>{data.invested}</div>
             </Col>
-            <div
-              style={{
-                backgroundColor: '#333',
-                width: '.1px',
-                height: '100px',
-              }}
-            />
+            {/* TODO: create a separator component */}
             <Col className='d-flex flex-column justify-content-center align-items-center'>
               <b>RETORNOS</b>
               <div>{data.refund}</div>
