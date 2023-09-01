@@ -2,21 +2,11 @@ import React, { useState } from 'react';
 // import Button from 'react-bootstrap/Button';
 import { Card, Collapse, Button, Row, Col } from '@themesberg/react-bootstrap';
 
-// BETFAIR
-// 2,88
-// ACIMA DE 3,5 CARTÕES NA PARTIDA
-
-// REAL MADRID X AL-HILAL
-
-// FAVBET
-// 1,78
-// ACIMA DE 3,5 CARTÕES NA PARTIDA
-
-// REAL MADRID X AL-HILAL
-
 export default ({ data }) => {
-  console.log('data :', data);
   const [open, setOpen] = useState(false);
+
+  const incomePercentage =
+    ((data.refund - data.invested) / data.invested) * 100;
 
   return (
     <Card>
@@ -28,7 +18,7 @@ export default ({ data }) => {
           aria-controls='example-collapse-text'
           aria-expanded={open}
         >
-          Lucro: +{data.value}%
+          Lucro: +{incomePercentage.toFixed()}%
         </Button>
       </div>
       <Collapse in={open}>
