@@ -1,19 +1,8 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faBoxOpen,
-  faCartArrowDown,
-  faChartPie,
-  faChevronDown,
-  faClipboard,
-  faCommentDots,
-  faFileAlt,
   faPlus,
-  faRocket,
-  faStore,
-  faStar,
-  faFire,
-  faSearch,
+  faEquals,
   faCalculator,
   faPlusCircle,
 } from '@fortawesome/free-solid-svg-icons';
@@ -21,69 +10,71 @@ import {
   Col,
   Row,
   Button,
-  Dropdown,
   Card,
   Form,
   Modal,
-  InputGroup,
-  Badge,
-  Stack,
   Collapse,
 } from '@themesberg/react-bootstrap';
-import { ChoosePhotoWidget, ProfileCardWidget } from '../components/Widgets';
-import { GeneralInfoForm } from '../components/Forms';
-
-import LogoPNG from '../assets/img/logo.png';
 
 export default () => {
   const [showDefault, setShowDefault] = useState(false);
   const handleClose = () => setShowDefault(false);
 
+  const [valueReturn, setValueReturn] = useState(0);
+
   return (
     <>
       <Modal as={Modal.Dialog} centered show={showDefault} onHide={handleClose}>
-        <Modal.Header>
-          <Modal.Title className="h6 text-center">
-            CALCULADORA ANTIRED
-          </Modal.Title>
-          <Button variant="close" aria-label="Close" onClick={handleClose} />
-        </Modal.Header>
-        <Modal.Header className="d-flex flex-column justify-content-center">
+        <Modal.Header className="d-flex flex-column justify-content-center bg-light">
           <Modal.Title className="h6 text-center">
             GEORGIA - ESPANHA
           </Modal.Title>
           Data do evento: 08/09/2023 ÀS 13:00 HS
         </Modal.Header>
         <Modal.Body>
-          <Modal.Title className="h6 text-center">
-            QUANTO VOCE QUER APOSTAR
-          </Modal.Title>
-          <Row>
-            <Col>
-              <div className="d-flex align-items-center">
-                <label>INVESTIR</label>
-                <Form.Control type="number" />
+          <div>
+            <Modal.Title className="h6 text-center">
+              QUANTO VOCE QUER APOSTAR
+            </Modal.Title>
+            <br />
+            <div className="d-flex gap-3">
+              <Form.Control
+                className="text-black fw-bold"
+                type="number"
+                placeholder="INVESTIR"
+              />
+
+              <span className="icon icon-sm">
+                <FontAwesomeIcon icon={faEquals} />
+              </span>
+
+              <Form.Control
+                className="bg-success text-white fw-bold custom-input"
+                placeholder={`RETORNA          R$ ${valueReturn}`}
+              />
+            </div>
+            <div className="text-center my-5">
+              <span className="text-with-dash fs-6">RESULTADO FINAL</span>
+              <FinalResultItem />
+              <FinalResultItem />
+              <div className="d-flex justify-content-between m-3">
+                <FinalResultSubItem label="Apostas" value={`R$ 300`} />
+                <FinalResultSubItem label="Voltar" value={`R$ 9.08`} />
+                <FinalResultSubItem
+                  label="Lucro Certo"
+                  value={<span className="text-success">9.08 %</span>}
+                />
               </div>
-            </Col>
-            =
-            <Col>
-              <div className="d-flex align-items-center">
-                <label>RETORNA</label>
-                <Form.Control className="bg-success text-secondary" />
-              </div>
-            </Col>
-          </Row>
+            </div>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            I Got It
-          </Button>
           <Button
             variant="link"
             className="text-gray ms-auto"
             onClick={handleClose}
           >
-            Close
+            Fechar
           </Button>
         </Modal.Footer>
       </Modal>
@@ -144,6 +135,44 @@ export default () => {
           </div>
         </Collapse>
       </Card>
+    </>
+  );
+};
+
+const FinalResultItem = () => {
+  return (
+    <>
+      <div className="d-flex gap-3 m-3">
+        <Form.Group>
+          <Form.Label>Casa 2</Form.Label>
+          <Form.Control />
+        </Form.Group>
+        <span className="icon icon-sm icon-transform-rotate">
+          <FontAwesomeIcon icon={faPlus} />
+        </span>
+        <Form.Group>
+          <Form.Label>Apostas</Form.Label>
+          <Form.Control />
+        </Form.Group>
+        <span className="icon icon-sm">
+          <FontAwesomeIcon icon={faEquals} />
+        </span>
+        <Form.Group>
+          <Form.Label>%</Form.Label>
+          <Form.Control />
+        </Form.Group>
+      </div>
+    </>
+  );
+};
+
+const FinalResultSubItem = ({ label, value }) => {
+  return (
+    <>
+      <div>
+        <div>{label} </div>
+        <div className="fw-bold">{value}</div>
+      </div>
     </>
   );
 };
