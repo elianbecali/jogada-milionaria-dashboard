@@ -135,10 +135,19 @@ export default (props) => {
       <div className="py-4">
         <Row>
           <Col>
-            <Content value={Operation01.toFixed(2)} subtitle="Resultado" />
+            <Content
+              label="R$ "
+              value={Operation01.toFixed(2)}
+              subtitle="Resultado"
+            />
           </Col>
           <Col>
-            <Content value={profit.toFixed(2)} subtitle="Lucro" />
+            <Content
+              label=" %"
+              isLabelLeftSide
+              value={profit.toFixed(2)}
+              subtitle="Lucro"
+            />
           </Col>
         </Row>
         <Row className="my-4">
@@ -211,13 +220,22 @@ export default (props) => {
   );
 };
 
-const Content = ({ value, subtitle }) => {
+const Content = ({
+  label = null,
+  isLabelLeftSide = false,
+  value,
+  subtitle,
+}) => {
   return (
     <Card border="light" className="shadow-sm">
       <Card.Body>
         <div className="d-flex justify-content-between">
           <div className="">
-            <h5>{value}</h5>
+            <h5>
+              {!isLabelLeftSide && label}
+              {value}
+              {isLabelLeftSide && label}
+            </h5>
             <h3 className="mb-1">{subtitle}</h3>
           </div>
           <div className="d-flex justify-content-center align-items-center">
