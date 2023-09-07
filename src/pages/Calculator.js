@@ -44,7 +44,7 @@ export default (props) => {
   // const percentageIcon = percentage < 0 ? faAngleDown : faAngleUp;
   // const percentageColor = percentage < 0 ? 'text-danger' : 'text-success';
 
-  const [totalInvested, setTotalInvested] = useState('');
+  const [totalInvested, setTotalInvested] = useState(0);
   const [value01, setValue01] = useState('');
   const [value02, setValue02] = useState('');
   const [value03, setValue03] = useState('');
@@ -66,7 +66,7 @@ export default (props) => {
   }
 
   function onChangeTotalInvested(e) {
-    setTotalInvested(e.target.value);
+    setTotalInvested(Number(e.target.value));
   }
 
   const handleCalculate = () => {
@@ -86,9 +86,9 @@ export default (props) => {
     setOperation02(Op02);
     setOperation03(Op03);
 
-    const inv01 = (parseFloat(totalInvested) * Operation01) / 100;
-    const inv02 = (parseFloat(totalInvested) * Operation02) / 100;
-    const inv03 = value03 ? (parseFloat(totalInvested) * Operation03) / 100 : 0;
+    const inv01 = (parseFloat(totalInvested) * Op01) / 100;
+    const inv02 = (parseFloat(totalInvested) * Op02) / 100;
+    const inv03 = value03 ? (parseFloat(totalInvested) * Op03) / 100 : 0;
 
     setInvested01(inv01);
     setInvested02(inv02);
@@ -103,11 +103,7 @@ export default (props) => {
     setValue02('');
     setValue03('');
 
-    console.log(
-      Operation01.toFixed(2),
-      Operation02.toFixed(2),
-      Operation03.toFixed(2)
-    );
+    console.log(Op01.toFixed(2), Op02.toFixed(2), Op03.toFixed(2));
   };
 
   const TABLE_DATA = [
@@ -134,35 +130,15 @@ export default (props) => {
     },
   ];
 
-  const Content = ({ value, subtitle }) => {
-    return (
-      <Card border="light" className="shadow-sm">
-        <Card.Body>
-          <div className="d-flex justify-content-between">
-            <div className="">
-              <h5>{value}</h5>
-              <h3 className="mb-1">{subtitle}</h3>
-            </div>
-            <div className="d-flex justify-content-center align-items-center">
-              <span className="icon icon-md bg-secondary rounded-circle p-3">
-                <FontAwesomeIcon icon={faHome} />
-              </span>
-            </div>
-          </div>
-        </Card.Body>
-      </Card>
-    );
-  };
-
   return (
     <>
       <div className="py-4">
         <Row>
           <Col>
-            <Content value={'BRL 00.0'} subtitle="Resultado" />
+            <Content value={Operation01.toFixed(2)} subtitle="Resultado" />
           </Col>
           <Col>
-            <Content value={profit} subtitle="Lucro" />
+            <Content value={profit.toFixed(2)} subtitle="Lucro" />
           </Col>
         </Row>
         <Row className="my-4">
@@ -179,7 +155,7 @@ export default (props) => {
                 </thead>
                 <tbody>
                   {TABLE_DATA.map((data, index) => (
-                    <tr key={index}>
+                    <tr key={data.id}>
                       <td className="border-1">
                         <div>
                           <span className="h6">{data.operation}</span>
@@ -201,7 +177,7 @@ export default (props) => {
                       </td>
                       <td className="border-0 text-success">
                         <span className="fw-bold">
-                          R$ {data.valueToOperate}
+                          R$ {data.valueToOperate.toFixed(2)}
                         </span>
                       </td>
                     </tr>
@@ -232,5 +208,25 @@ export default (props) => {
         </Row>
       </div>
     </>
+  );
+};
+
+const Content = ({ value, subtitle }) => {
+  return (
+    <Card border="light" className="shadow-sm">
+      <Card.Body>
+        <div className="d-flex justify-content-between">
+          <div className="">
+            <h5>{value}</h5>
+            <h3 className="mb-1">{subtitle}</h3>
+          </div>
+          <div className="d-flex justify-content-center align-items-center">
+            <span className="icon icon-md bg-secondary rounded-circle p-3">
+              <FontAwesomeIcon icon={faHome} />
+            </span>
+          </div>
+        </div>
+      </Card.Body>
+    </Card>
   );
 };
