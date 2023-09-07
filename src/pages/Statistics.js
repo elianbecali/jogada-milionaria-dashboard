@@ -224,13 +224,13 @@ const BETS = [
 export default () => {
   //
   return (
-    <div className='py-5'>
-      <Tab.Container id='left-tabs-example' defaultActiveKey='first'>
-        <Nav variant='pills'>
+    <div className="py-5">
+      <Tab.Container id="left-tabs-example" defaultActiveKey="BETANO">
+        <Nav variant="pills">
           {BET_NAMES.map((bet, index) => (
             <div key={index}>
               <Nav.Item>
-                <Nav.Link eventKey={bet} className='bg-secondary'>
+                <Nav.Link eventKey={bet} className="bg-secondary">
                   {bet}
                 </Nav.Link>
               </Nav.Item>
