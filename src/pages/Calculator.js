@@ -70,6 +70,8 @@ export default (props) => {
   }
 
   const handleCalculate = () => {
+    //TODO: Faltando "valor a operar, lucro e resultado"
+
     const sum = value03
       ? 1 / parseFloat(value01) +
         1 / parseFloat(value02) +
