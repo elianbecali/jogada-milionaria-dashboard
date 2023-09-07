@@ -20,7 +20,7 @@ export default () => {
   const [showDefault, setShowDefault] = useState(false);
   const handleClose = () => setShowDefault(false);
 
-  const [valueReturn, setValueReturn] = useState(0);
+  const [valueReturn, setValueReturn] = useState(109.08);
 
   return (
     <>
@@ -41,7 +41,7 @@ export default () => {
               <Form.Control
                 className="text-black fw-bold"
                 type="number"
-                placeholder="INVESTIR"
+                placeholder="INVESTIR 100"
               />
 
               <span className="icon icon-sm">
@@ -145,21 +145,24 @@ const FinalResultItem = () => {
       <div className="d-flex gap-3 m-3">
         <Form.Group>
           <Form.Label>Casa 2</Form.Label>
-          <Form.Control />
+          <Form.Control className="bg-info text-white fw-bold" value="2.54" />
         </Form.Group>
         <span className="icon icon-sm icon-transform-rotate">
           <FontAwesomeIcon icon={faPlus} />
         </span>
         <Form.Group>
           <Form.Label>Apostas</Form.Label>
-          <Form.Control />
+          <Form.Control className="text-black fw-bold" value={`R$ 48.54`} />
         </Form.Group>
         <span className="icon icon-sm">
           <FontAwesomeIcon icon={faEquals} />
         </span>
         <Form.Group>
           <Form.Label>%</Form.Label>
-          <Form.Control />
+          <Form.Control
+            className="bg-light text-black fw-bold"
+            value={`R$ 48.54`}
+          />
         </Form.Group>
       </div>
     </>
