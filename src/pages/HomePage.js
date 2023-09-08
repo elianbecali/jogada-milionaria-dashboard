@@ -174,7 +174,7 @@ export default () => (
     <RouteWithSidebar
       exact
       path={Routes.DashboardOverview.path}
-      component={DashboardOverview}
+      component={TopOperations}
     />
     <RouteWithSidebar exact path={Routes.Upgrade.path} component={Upgrade} />
     <RouteWithSidebar
