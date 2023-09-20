@@ -25,11 +25,23 @@ import "react-datetime/css/react-datetime.css";
 
 import HomePage from "./pages/HomePage";
 import ScrollToTop from "./components/ScrollToTop";
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false
+    }
+  }
+})
 
 ReactDOM.render(
   <HashRouter>
-    <ScrollToTop />
-    <HomePage />
+    <QueryClientProvider client={queryClient}>
+      <ScrollToTop />
+      <HomePage />
+    </QueryClientProvider>
   </HashRouter>,
   document.getElementById("root")
 );

@@ -15,21 +15,44 @@ import {
   Modal,
   Collapse,
 } from '@themesberg/react-bootstrap';
+import { useQuery } from 'react-query';
+import { api } from '../services/api';
+import { isAxiosError } from 'axios';
+import { format } from 'date-fns';
 
 export default () => {
-  const [showDefault, setShowDefault] = useState(false);
-  const handleClose = () => setShowDefault(false);
+  const [showItemModal, setShowItemModal] = useState<TTipsPremium.TypeItemResponse | null>(null);
+  const handleClose = () => setShowItemModal(null);
 
   const [valueReturn, setValueReturn] = useState(109.08);
 
+  const { data: tips } = useQuery({
+    queryKey: ['tips-premium'],
+    queryFn: async () => {
+      try {
+        const { data } = await api.get<TTipsPremium.GetTipsResponse>('/tips');
+
+        const formattedData = data.map(item => ({
+          ...item,
+          dateFormatted: format(new Date(item.date), 'dd/MM/yyyy HH:mm')
+        }))
+
+        return formattedData; 
+      } catch (error) {
+        return [];
+      }
+    }
+  })
+  
+
   return (
     <>
-      <Modal as={Modal.Dialog} centered show={showDefault} onHide={handleClose}>
+      <Modal as={Modal.Dialog} centered show={!!showItemModal} onHide={handleClose}>
         <Modal.Header className="d-flex flex-column justify-content-center bg-light">
           <Modal.Title className="h6 text-center">
-            GEORGIA - ESPANHA
+            {showItemModal?.team1} - {showItemModal?.team2}
           </Modal.Title>
-          Data do evento: 08/09/2023 ÀS 13:00 HS
+          Data do evento: {showItemModal?.dateFormatted}
         </Modal.Header>
         <Modal.Body>
           <div>
@@ -45,12 +68,13 @@ export default () => {
               />
 
               <span className="icon icon-sm">
-                <FontAwesomeIcon icon={faEquals} />
+                <FontAwesomeIcon icon={faEquals as any} />
               </span>
 
               <Form.Control
                 className="bg-success text-white fw-bold custom-input"
-                placeholder={`RETORNA          R$ ${valueReturn}`}
+                placeholder={`RETORNA R$ ${valueReturn}`}
+                disabled
               />
             </div>
             <div className="text-center my-5">
@@ -62,7 +86,7 @@ export default () => {
                 <FinalResultSubItem label="Voltar" value={`R$ 9.08`} />
                 <FinalResultSubItem
                   label="Lucro Certo"
-                  value={<span className="text-success">9.08 %</span>}
+                  value={<span className="text-success">{showItemModal?.profit} %</span>}
                 />
               </div>
             </div>
@@ -79,17 +103,18 @@ export default () => {
         </Modal.Footer>
       </Modal>
       <h6>Operação</h6>
-      <Card>
+      {tips?.map(tip => (
+        <Card className='my-4' key={tip.id}>
         <div className="d-flex justify-content-between p-3 align-items-center bg-light">
           <div className="d-flex justify-content-center align-items-center">
             <Button variant="text">
-              <FontAwesomeIcon icon={faPlusCircle} />
+              <FontAwesomeIcon icon={faPlusCircle as any} />
             </Button>
 
-            <h5>FUTEBOL – VENEZUELA – SEGUNDA DIVISÃO</h5>
+            <h5>{tip.game} – {tip.local} – {tip.classification}</h5>
           </div>
 
-          <h5>06/09/2023 ÀS 17:00 HS</h5>
+          <h5>{tip.dateFormatted}</h5>
         </div>
         <Collapse in={true}>
           <div id="example-collapse-text">
@@ -97,18 +122,18 @@ export default () => {
               <Row>
                 <Col xs={10}>
                   <div>
-                    <div>EOVEGAS</div>
-                    <div>BETWAY</div>
+                    <div>{tip.house1}</div>
+                    <div>{tip.house2}</div>
                   </div>
                   <br />
                   <div>
-                    <div>CS MARITIMO DE LA GUAIRA</div>
-                    <div>ATLETICO LA CRUZ</div>
+                    <div>{tip.team1}</div>
+                    <div>{tip.team2}</div>
                   </div>
                   <br />
                   <div>
-                    <div>TIME 1 VENCE E EMPATE ANULA A APOSTA</div>
-                    <div>TIME 2 VENCE E EMPATE ANULA A APOSTA</div>
+                    <div>{tip.description_team1}</div>
+                    <div>{tip.description_team2}</div>
                   </div>
                 </Col>
                 <Col>
@@ -121,20 +146,21 @@ export default () => {
             </div>
             <div className="d-flex justify-content-between align-items-center bg-white m-1">
               <Button variant="success" disabled className="m-1">
-                <i>5,12% LUCRO GARANTIDO</i>
+                <i>{tip.profit}% LUCRO GARANTIDO</i>
               </Button>
               <Button
                 variant="secondary"
                 className="m-1"
-                onClick={() => setShowDefault(true)}
+                onClick={() => setShowItemModal(tip)}
               >
-                <FontAwesomeIcon icon={faCalculator} className="me-2" />{' '}
+                <FontAwesomeIcon icon={faCalculator as any} className="me-2" />{' '}
                 Calcular
               </Button>
             </div>
           </div>
         </Collapse>
       </Card>
+      ))}
     </>
   );
 };
@@ -148,14 +174,14 @@ const FinalResultItem = () => {
           <Form.Control className="bg-info text-white fw-bold" value="2.54" />
         </Form.Group>
         <span className="icon icon-sm icon-transform-rotate">
-          <FontAwesomeIcon icon={faPlus} />
+          <FontAwesomeIcon icon={faPlus as any} />
         </span>
         <Form.Group>
           <Form.Label>Apostas</Form.Label>
           <Form.Control className="text-black fw-bold" value={`R$ 48.54`} />
         </Form.Group>
         <span className="icon icon-sm">
-          <FontAwesomeIcon icon={faEquals} />
+          <FontAwesomeIcon icon={faEquals as any} />
         </span>
         <Form.Group>
           <Form.Label>%</Form.Label>
@@ -169,7 +195,7 @@ const FinalResultItem = () => {
   );
 };
 
-const FinalResultSubItem = ({ label, value }) => {
+const FinalResultSubItem = ({ label, value }: any) => {
   return (
     <>
       <div>
