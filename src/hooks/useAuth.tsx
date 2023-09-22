@@ -9,6 +9,7 @@ type AuthContextProps = {
   user: User | null;
   isAuthenticaded: boolean;
   updateUser: (data: User) => void;
+  logout: () => void;
 }
 
 type AuthProviderProps = {
@@ -24,8 +25,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(data) 
   }
 
+  function logout() {
+    setUser(null)
+  }
+
   return (
-    <AuthContext.Provider value={{  user, isAuthenticaded: !!user?.email, updateUser: handleSetUser}}>
+    <AuthContext.Provider value={{ user, isAuthenticaded: !!user?.email, updateUser: handleSetUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
