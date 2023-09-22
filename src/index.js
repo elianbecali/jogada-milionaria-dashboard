@@ -15,8 +15,6 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter } from "react-router-dom";
-
 // core styles
 import "./scss/volt.scss";
 
@@ -26,6 +24,8 @@ import "react-datetime/css/react-datetime.css";
 import HomePage from "./pages/HomePage";
 import ScrollToTop from "./components/ScrollToTop";
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { AuthProvider } from './hooks/useAuth';
+import { BrowserRouter } from 'react-router-dom';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,11 +37,13 @@ const queryClient = new QueryClient({
 })
 
 ReactDOM.render(
-  <HashRouter>
-    <QueryClientProvider client={queryClient}>
-      <ScrollToTop />
-      <HomePage />
-    </QueryClientProvider>
-  </HashRouter>,
+  <BrowserRouter>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <ScrollToTop />
+        <HomePage />
+      </QueryClientProvider>
+    </AuthProvider>
+  </BrowserRouter>,
   document.getElementById("root")
 );

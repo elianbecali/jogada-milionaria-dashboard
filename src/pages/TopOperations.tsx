@@ -1,55 +1,12 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faBoxOpen,
-  faCartArrowDown,
-  faChartPie,
-  faChevronDown,
-  faClipboard,
-  faCommentDots,
-  faFileAlt,
-  faPlus,
-  faRocket,
-  faStore,
-} from '@fortawesome/free-solid-svg-icons';
 import {
   Card,
-  Image,
-  ListGroup,
-  ProgressBar,
-  Col,
-  Row,
-  Button,
-  Dropdown,
 } from '@themesberg/react-bootstrap';
-import {
-  faAngleDown,
-  faAngleUp,
-  faChartArea,
-  faChartBar,
-  faChartLine,
-  faFlagUsa,
-  faFolderOpen,
-  faGlobeEurope,
-  faPaperclip,
-  faUserPlus,
-} from '@fortawesome/free-solid-svg-icons';
-import { ChoosePhotoWidget, ProfileCardWidget } from '../components/Widgets';
-import { GeneralInfoForm } from '../components/Forms';
 
-import Profile3 from '../assets/img/team/profile-picture-3.jpg';
 
-import {
-  CounterWidget,
-  CircleChartWidget,
-  BarChartWidget,
-  TeamMembersWidget,
-  ProgressTrackWidget,
-  RankingWidget,
-  SalesValueWidget,
-  SalesValueWidgetPhone,
-  AcquisitionWidget,
-} from '../components/Widgets';
+import { api } from '../services/api';
+import { useQuery } from 'react-query';
+import { format } from 'date-fns';
 
 const topOperations = [
   {
@@ -84,21 +41,55 @@ const topOperations = [
   },
 ];
 
+export interface TopOperation {
+  id: string
+  game: string
+  local: string
+  classification: string
+  house1: string
+  house2: string
+  team1: string
+  team2: string
+  description_team1: string
+  description_team2: string
+  profit: number
+  is_top: boolean
+  date: string
+  created_at: string
+  updated_at: string
+}
+
+
 export default () => {
+
+  async function fetchTopOperations() {
+    try {
+      const response = await api.get<TopOperation[]>('/tips', { params: { topOperations: true } })
+
+      return response.data;
+    } catch (error) {
+      return []
+    }
+  }
+
+  const { data } = useQuery('top-operations', { 
+    queryFn: fetchTopOperations,
+   })
+
   return (
     <>
       <div className='py-4'>
         <h5>Top Operações</h5>
         <Card border='light' className='shadow-sm hover'>
-          {topOperations.map((op, index) => (
+          {data?.map((op, index) => (
             <Card.Body key={index}>
               <div className='d-flex align-items-center justify-content-between border-bottom border-light pb-3'>
                 <div>
                   <div className='d-flex'>
-                    <span className='p-3 mx-3 bg bg-danger'>{op.state}</span>
+                    <span className='p-3 mx-3 bg bg-danger'>SP</span>
                     <div>
-                      <h6>{op.title}</h6>
-                      <div className='small card-stats'>{op.createdAt}</div>
+                      <h6>{op.house1.toLocaleUpperCase()} & {op.house2.toLocaleUpperCase()}</h6>
+                      <div className='small card-stats'>{format(new Date(op.date), 'dd/MM/yyyy HH:mm')}</div>
                     </div>
                   </div>
                 </div>
@@ -107,7 +98,7 @@ export default () => {
                     href='#'
                     className='text-primary fw-bold text-success'
                   >
-                    + {op.value}%
+                    + {op.profit}%
                   </Card.Link>
                 </div>
               </div>

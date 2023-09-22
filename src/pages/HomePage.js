@@ -3,9 +3,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import { Routes } from '../routes';
 
 // pages
-import Presentation from './Presentation';
 import Upgrade from './Upgrade';
-import DashboardOverview from './dashboard/DashboardOverview';
 import Transactions from './Transactions';
 import Settings from './Settings';
 import BootstrapTables from './tables/BootstrapTables';
@@ -52,6 +50,7 @@ import Statistics from './Statistics';
 import TopOperations from './TopOperations';
 import Calculator from './Calculator';
 import TipsPremium from './TipsPremium';
+import { useAuth } from '../hooks/useAuth';
 
 const RouteWithLoader = ({ component: Component, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
@@ -74,8 +73,9 @@ const RouteWithLoader = ({ component: Component, ...rest }) => {
   );
 };
 
-const RouteWithSidebar = ({ component: Component, ...rest }) => {
+const RouteWithSidebar = ({ component: Component, isPrivate, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
+  const { isAuthenticaded } = useAuth();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 1000);
@@ -94,6 +94,10 @@ const RouteWithSidebar = ({ component: Component, ...rest }) => {
     setShowSettings(!showSettings);
     localStorage.setItem('settingsVisible', !showSettings);
   };
+
+  if (isPrivate && !isAuthenticaded) {
+    return <Redirect to={Routes.Signin.path} />
+  }
 
   return (
     <Route
@@ -117,12 +121,12 @@ const RouteWithSidebar = ({ component: Component, ...rest }) => {
   );
 };
 
-export default () => (
+const HomePage = () => (
   <Switch>
     <RouteWithLoader
       exact
       path={Routes.Presentation.path}
-      component={Presentation}
+      component={Signin}
     />
     <RouteWithLoader exact path={Routes.Signin.path} component={Signin} />
     <RouteWithLoader exact path={Routes.Signup.path} component={Signup} />
@@ -150,24 +154,25 @@ export default () => (
 
     {/* new pages */}
     <RouteWithSidebar
-      exact
       path={Routes.TipsPremium.path}
       component={TipsPremium}
+
+      isPrivate
     />
     <RouteWithSidebar
-      exact
       path={Routes.TopOperations.path}
       component={TopOperations}
+      isPrivate
     />
     <RouteWithSidebar
-      exact
       path={Routes.Statistics.path}
       component={Statistics}
+      isPrivate
     />
     <RouteWithSidebar
-      exact
       path={Routes.Calculator.path}
       component={Calculator}
+      isPrivate
     />
 
     {/* pages */}
@@ -259,3 +264,5 @@ export default () => (
     <Redirect to={Routes.NotFound.path} />
   </Switch>
 );
+
+export default HomePage
