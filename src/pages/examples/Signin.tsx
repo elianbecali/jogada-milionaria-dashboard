@@ -18,10 +18,9 @@ const SignIn = () => {
   const { updateUser } = useAuth();
 
   async function postLogin(email: string) {
-    await new Promise((resolve) => setTimeout(resolve, 3000))
     const response = await api.post('/sales/login', { email });
 
-    return response.data;
+    return response?.data;
   }
 
   const { mutateAsync, isLoading } = useMutation({
@@ -43,7 +42,7 @@ const SignIn = () => {
       {
          loading: 'Verificando seu email...',
          success: <b>Login realizado com sucesso!</b>,
-         error: (err) => <b>{err?.response.data.message}</b>,
+         error: (err) => <b>{err?.response?.data?.message}</b>,
        }
      );
   }

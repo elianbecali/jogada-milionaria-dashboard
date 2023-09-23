@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlus,
@@ -20,11 +20,31 @@ import { api } from '../services/api';
 import { isAxiosError } from 'axios';
 import { format } from 'date-fns';
 
-export default () => {
+type Odd = {
+  id: string;
+  value: string;
+}
+
+const TipsPremium = () => {
   const [showItemModal, setShowItemModal] = useState<TTipsPremium.TypeItemResponse | null>(null);
   const handleClose = () => setShowItemModal(null);
 
   const [valueReturn, setValueReturn] = useState(109.08);
+  const [amountForBet, setAmountForBet] = useState('100');
+  const [amountForOperate, setAmountForOperate] = useState({
+    odd1: 0,
+    odd2: 0,
+  });
+  const [odd1, setOdd1] = useState({} as Odd);
+  const [odd2, setOdd2] = useState({} as Odd);
+  const [probability, setProbability] = useState({
+    odd1: '',
+    odd2: '',
+  });
+  const [profit, setProfit] = useState({
+    odd1: '',
+    odd2: ''
+  });
 
   const { data: tips } = useQuery({
     queryKey: ['tips-premium'],
@@ -43,7 +63,48 @@ export default () => {
       }
     }
   })
+
+  function onChangeOdd(odd: { value: string, id: string }, type: 1 | 2) {
+    if (type === 1) {
+      setOdd1(odd)
+    } else {
+      setOdd2(odd)
+    }
+  }
   
+  // const handleCalculate = () => {
+    //TODO: Faltando "valor a operar, lucro e resultado"
+
+    useEffect(() => {
+      const sum = 1 / parseFloat(odd1.value) + 1 / parseFloat(odd2.value);
+
+      const Op01 = (1 / parseFloat(odd1.value) / sum) * 100;
+      const Op02 = (1 / parseFloat(odd2.value) / sum) * 100;
+  
+      setProbability({odd2: Op02, odd1: Op01});
+      
+      const inv01 = (parseFloat(amountForBet) * Op01) / 100;
+      const inv02 = (parseFloat(amountForBet) * Op02) / 100;
+  
+      setAmountForOperate({ odd2: inv02, odd1: inv01 });
+  
+      const profit1 = (inv01 * parseFloat(odd1.value)).toFixed(2);
+      const profit2 = (inv02 * parseFloat(odd2.value)).toFixed(2);
+
+      console.log({profit1, profit2})
+  
+      setProfit({ odd1: profit1, odd2: profit2 });
+    }, [odd1, odd2, amountForBet])
+
+    
+
+
+    // Update state with the calculated values
+    // setTotalInvested('');
+    // setValue01('');
+    // setValue02('');
+    // setValue03('');
+  // };
 
   return (
     <>
@@ -65,6 +126,8 @@ export default () => {
                 className="text-black fw-bold"
                 type="number"
                 placeholder="INVESTIR 100"
+                value={amountForBet}
+                onChange={(event) => setAmountForBet(event.target.value)}
               />
 
               <span className="icon icon-sm">
@@ -79,8 +142,8 @@ export default () => {
             </div>
             <div className="text-center my-5">
               <span className="text-with-dash fs-6">RESULTADO FINAL</span>
-              <FinalResultItem />
-              <FinalResultItem />
+              <FinalResultItem odd={odd1.value} house="1" profit={profit.odd1} value="133" />
+              <FinalResultItem odd={odd2.value} house="2" profit={profit.odd2} value="153" />
               <div className="d-flex justify-content-between m-3">
                 <FinalResultSubItem label="Apostas" value={`R$ 300`} />
                 <FinalResultSubItem label="Voltar" value={`R$ 9.08`} />
@@ -138,9 +201,17 @@ export default () => {
                 </Col>
                 <Col>
                   Odds 01:
-                  <Form.Control required type="number" placeholder="Ex: 80" />
+                  <Form.Control
+                    required type="number"
+                    placeholder="Ex: 80"
+                    value={odd1?.id === tip.id ? odd1.value : ''}
+                    onChange={(e) => onChangeOdd({ value: e.target.value, id: tip.id }, 1)} />
                   Odds 02:
-                  <Form.Control required type="number" placeholder="Ex: 80" />
+                  <Form.Control
+                    required type="number"
+                    placeholder="Ex: 80"
+                    value={odd2?.id === tip.id ? odd2.value : ''}
+                    onChange={(e) => onChangeOdd({ value: e.target.value, id: tip.id }, 2)} />
                 </Col>
               </Row>
             </div>
@@ -151,6 +222,7 @@ export default () => {
               <Button
                 variant="secondary"
                 className="m-1"
+                disabled={!(odd1.id === tip.id && odd2.id === tip.id)}
                 onClick={() => setShowItemModal(tip)}
               >
                 <FontAwesomeIcon icon={faCalculator as any} className="me-2" />{' '}
@@ -165,20 +237,20 @@ export default () => {
   );
 };
 
-const FinalResultItem = () => {
+const FinalResultItem = ({ odd, house, profit, value }: any) => {
   return (
     <>
       <div className="d-flex gap-3 m-3">
         <Form.Group>
-          <Form.Label>Casa 2</Form.Label>
-          <Form.Control className="bg-info text-white fw-bold" value="2.54" />
+          <Form.Label>Casa {house}</Form.Label>
+          <Form.Control className="bg-info text-white fw-bold" value={odd} />
         </Form.Group>
         <span className="icon icon-sm icon-transform-rotate">
           <FontAwesomeIcon icon={faPlus as any} />
         </span>
         <Form.Group>
           <Form.Label>Apostas</Form.Label>
-          <Form.Control className="text-black fw-bold" value={`R$ 48.54`} />
+          <Form.Control className="text-black fw-bold" value={value} />
         </Form.Group>
         <span className="icon icon-sm">
           <FontAwesomeIcon icon={faEquals as any} />
@@ -187,7 +259,7 @@ const FinalResultItem = () => {
           <Form.Label>%</Form.Label>
           <Form.Control
             className="bg-light text-black fw-bold"
-            value={`R$ 48.54`}
+            value={profit}
           />
         </Form.Group>
       </div>
@@ -205,3 +277,5 @@ const FinalResultSubItem = ({ label, value }: any) => {
     </>
   );
 };
+
+export default TipsPremium
