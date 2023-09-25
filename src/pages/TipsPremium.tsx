@@ -29,7 +29,6 @@ const TipsPremium = () => {
   const [showItemModal, setShowItemModal] = useState<TTipsPremium.TypeItemResponse | null>(null);
   const handleClose = () => setShowItemModal(null);
 
-  const [valueReturn, setValueReturn] = useState(109.08);
   const [amountForBet, setAmountForBet] = useState('100');
   const [amountForOperate, setAmountForOperate] = useState({
     odd1: 0,
@@ -38,12 +37,12 @@ const TipsPremium = () => {
   const [odd1, setOdd1] = useState({} as Odd);
   const [odd2, setOdd2] = useState({} as Odd);
   const [probability, setProbability] = useState({
-    odd1: '',
-    odd2: '',
+    odd1: 0,
+    odd2: 0,
   });
-  const [profit, setProfit] = useState({
-    odd1: '',
-    odd2: ''
+  const [lucro, setLucro] = useState({
+    odd1: 0,
+    odd2: 0
   });
 
   const { data: tips } = useQuery({
@@ -76,10 +75,10 @@ const TipsPremium = () => {
     //TODO: Faltando "valor a operar, lucro e resultado"
 
     useEffect(() => {
-      const sum = 1 / parseFloat(odd1.value) + 1 / parseFloat(odd2.value);
+      const sum = (1 / parseFloat(odd1.value)) + (1 / parseFloat(odd2.value));
 
-      const Op01 = (1 / parseFloat(odd1.value) / sum) * 100;
-      const Op02 = (1 / parseFloat(odd2.value) / sum) * 100;
+      const Op01 = ((1 / parseFloat(odd1.value)) / sum) * 100;
+      const Op02 = ((1 / parseFloat(odd2.value)) / sum) * 100;
   
       setProbability({odd2: Op02, odd1: Op01});
       
@@ -88,12 +87,10 @@ const TipsPremium = () => {
   
       setAmountForOperate({ odd2: inv02, odd1: inv01 });
   
-      const profit1 = (inv01 * parseFloat(odd1.value)).toFixed(2);
-      const profit2 = (inv02 * parseFloat(odd2.value)).toFixed(2);
+      const lucro1 = (inv01 * Number(odd1.value));
+      const lucro2 = (inv02 * Number(odd2.value));
 
-      console.log({profit1, profit2})
-  
-      setProfit({ odd1: profit1, odd2: profit2 });
+      setLucro({ odd1: lucro1, odd2: lucro2 });
     }, [odd1, odd2, amountForBet])
 
     
@@ -136,20 +133,20 @@ const TipsPremium = () => {
 
               <Form.Control
                 className="bg-success text-white fw-bold custom-input"
-                placeholder={`RETORNA R$ ${valueReturn}`}
+                placeholder={`RETORNA R$ ${lucro.odd1.toFixed(2)}`}
                 disabled
               />
             </div>
             <div className="text-center my-5">
               <span className="text-with-dash fs-6">RESULTADO FINAL</span>
-              <FinalResultItem odd={odd1.value} house="1" profit={profit.odd1} value="133" />
-              <FinalResultItem odd={odd2.value} house="2" profit={profit.odd2} value="153" />
+              <FinalResultItem odd={odd1.value} house="1" profit={probability.odd1.toFixed(2)} value={'R$ '+amountForOperate.odd1.toFixed(2)} />
+              <FinalResultItem odd={odd2.value} house="2" profit={probability.odd2.toFixed(2)} value={'R$ '+amountForOperate.odd2.toFixed(2)} />
               <div className="d-flex justify-content-between m-3">
-                <FinalResultSubItem label="Apostas" value={`R$ 300`} />
-                <FinalResultSubItem label="Voltar" value={`R$ 9.08`} />
+                <FinalResultSubItem label="Apostas" value={`R$ ${amountForBet}`} />
+                <FinalResultSubItem label="Voltar" value={`R$ ${((lucro.odd1) - Number(amountForBet)).toFixed(2)}`} />
                 <FinalResultSubItem
                   label="Lucro Certo"
-                  value={<span className="text-success">{showItemModal?.profit} %</span>}
+                  value={<span className="text-success">{((100 * (lucro.odd1 - Number(amountForBet))) / Number(amountForBet)).toFixed(2)} %</span>}
                 />
               </div>
             </div>
